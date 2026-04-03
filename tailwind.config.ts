@@ -47,6 +47,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        correct: "hsl(var(--correct))",
+        incorrect: "hsl(var(--incorrect))",
+        timeout: "hsl(var(--timeout))",
+        dial: {
+          bg: "hsl(var(--dial-bg))",
+          active: "hsl(var(--dial-active))",
+          ring: "hsl(var(--dial-ring))",
+        },
+        timer: {
+          bar: "hsl(var(--timer-bar))",
+          danger: "hsl(var(--timer-danger))",
+        },
+        perf: {
+          good: "hsl(var(--perf-good))",
+          bad: "hsl(var(--perf-bad))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,25 +81,22 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "scale-in": {
+          "0%": { transform: "scale(0.8)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "scale-in": "scale-in 0.2s ease-out",
       },
     },
   },
