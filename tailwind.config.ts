@@ -47,6 +47,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        correct: "hsl(var(--correct))",
+        incorrect: "hsl(var(--incorrect))",
+        timeout: "hsl(var(--timeout))",
+        dial: {
+          bg: "hsl(var(--dial-bg))",
+          active: "hsl(var(--dial-active))",
+          ring: "hsl(var(--dial-ring))",
+        },
+        timer: {
+          bar: "hsl(var(--timer-bar))",
+          danger: "hsl(var(--timer-danger))",
+        },
+        perf: {
+          good: "hsl(var(--perf-good))",
+          bad: "hsl(var(--perf-bad))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
