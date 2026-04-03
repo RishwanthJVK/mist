@@ -48,7 +48,7 @@ Installation
 Clone the repo:
 
 Bash
-git clone [https://github.com/your-username/mist-explorer.git](https://github.com/your-username/mist-explorer.git)
+git clone [https://github.com/your-username/mist.git](https://github.com/your-username/mist.git)
 Install dependencies:
 
 Bash
