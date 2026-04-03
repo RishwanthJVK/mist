@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# MIST
 
-TODO: Document your project here
+
