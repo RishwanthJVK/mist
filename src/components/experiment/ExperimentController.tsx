@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   type ExperimentMode,
   type ExperimentState,
-  type FeedbackType,
   generateTask,
-  getTimeLimit,
   createInitialState,
 } from "@/lib/experiment-logic";
 import TaskDisplay from "./TaskDisplay";
@@ -13,6 +12,9 @@ import TimerBar from "./TimerBar";
 import FeedbackOverlay from "./FeedbackOverlay";
 import PerformanceBars from "./PerformanceBars";
 import RestScreen from "./RestScreen";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 type Action =
   | { type: "SET_MODE"; mode: ExperimentMode }
@@ -22,10 +24,17 @@ type Action =
   | { type: "CLEAR_FEEDBACK" }
   | { type: "NEXT_TASK" };
 
+
 function reducer(state: ExperimentState, action: Action): ExperimentState {
   switch (action.type) {
-    case "SET_MODE":
-      return createInitialState(action.mode);
+    case "SET_MODE": {
+      if (state.mode === action.mode) return state; // ignore if same
+      let newAverage = state.userAverageResponseTime;
+      if (state.mode === "TRAINING" && state.trainingResponseTimes.length > 0) {
+        newAverage = state.trainingResponseTimes.reduce((a, b) => a + b, 0) / state.trainingResponseTimes.length;
+      }
+      return createInitialState(action.mode, newAverage);
+    }
 
     case "ROTATE": {
       const next = ((state.selectedDigit + action.direction) % 10 + 10) % 10;
@@ -38,6 +47,15 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
       const totalAnswered = state.totalAnswered + 1;
       const totalCorrect = state.totalCorrect + (isCorrect ? 1 : 0);
       const accuracy = totalCorrect / totalAnswered;
+
+      let consecutiveCorrect = isCorrect ? state.consecutiveCorrect + 1 : 0;
+      let consecutiveIncorrect = isCorrect ? 0 : state.consecutiveIncorrect + 1;
+
+      let trainingResponseTimes = [...state.trainingResponseTimes];
+      if (state.mode === "TRAINING") {
+        trainingResponseTimes.push(responseTime);
+      }
+
       return {
         ...state,
         responseTime,
@@ -45,6 +63,9 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
         totalAnswered,
         totalCorrect,
         accuracy,
+        consecutiveCorrect,
+        consecutiveIncorrect,
+        trainingResponseTimes,
       };
     }
 
@@ -57,6 +78,8 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
         feedback: "timeout",
         totalAnswered,
         accuracy,
+        consecutiveCorrect: 0,
+        consecutiveIncorrect: state.consecutiveIncorrect + 1,
       };
     }
 
@@ -64,13 +87,41 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
       return { ...state, feedback: null };
 
     case "NEXT_TASK": {
-      const task = generateTask(state.mode);
+      let { timeLimit, consecutiveCorrect, consecutiveIncorrect, difficultyLevel, mode, totalAnswered, accuracy } = state;
+
+      if (mode === "STRESS") {
+        if (consecutiveCorrect >= 3) {
+          timeLimit *= 0.9;
+          consecutiveCorrect = 0;
+          if (difficultyLevel < 5 && Math.random() > 0.5) difficultyLevel++;
+        }
+        if (consecutiveIncorrect >= 3) {
+          timeLimit *= 1.1;
+          consecutiveIncorrect = 0;
+          if (difficultyLevel > 1 && Math.random() > 0.5) difficultyLevel--;
+        }
+
+        // Forced failure watchdog
+        if (totalAnswered >= 5 && accuracy > 0.45) {
+          timeLimit *= 0.8;
+          if (difficultyLevel < 5) difficultyLevel++;
+        }
+
+        timeLimit = Math.max(1000, timeLimit); // Minimum 1s limit
+      } else if (mode === "CONTROL") {
+         difficultyLevel = 3;
+      }
+
+      const task = generateTask(difficultyLevel);
       return {
         ...state,
         currentTask: task.expression,
         currentAnswer: task.answer,
         selectedDigit: 0,
-        timeLimit: getTimeLimit(state.mode, state.accuracy),
+        timeLimit,
+        difficultyLevel,
+        consecutiveCorrect,
+        consecutiveIncorrect,
         startTime: performance.now(),
         responseTime: null,
         feedback: null,
@@ -83,13 +134,109 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
 }
 
 const ExperimentController = () => {
-  const [state, dispatch] = useReducer(reducer, "STRESS", createInitialState);
+  const [participantId, setParticipantId] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(reducer, "REST", (m) => createInitialState(m as ExperimentMode));
   const feedbackTimer = useRef<number>(0);
   const isShowingFeedback = state.feedback !== null;
+  const navigate = useNavigate();
 
   const handleTimeout = useCallback(() => {
     dispatch({ type: "TIMEOUT" });
   }, []);
+
+  const handleLogout = async () => {
+    if (window.confirm("Are you sure you want to exit the session?")) {
+      await supabase.auth.signOut();
+      navigate('/');
+    }
+  }
+
+  // Sync auth on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setParticipantId(session.user.id);
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
+  // Realtime Subscription & Live State Fetch
+  useEffect(() => {
+    if (!participantId) return;
+
+    // Fetch initial state
+    supabase
+      .from('participant_state')
+      .select('current_mode')
+      .eq('participant_id', participantId)
+      .single()
+      .then(({ data }) => {
+        if (data?.current_mode) {
+          dispatch({ type: "SET_MODE", mode: data.current_mode as ExperimentMode });
+        }
+      });
+
+    // Subscribe to admin remote control changes
+    const channel = supabase
+      .channel(`sync-participant-${participantId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'participant_state',
+        },
+        (payload) => {
+          console.log("Realtime payload received in Experiment:", payload);
+          if (payload.new && payload.new.participant_id === participantId) {
+            const newMode = payload.new.current_mode as ExperimentMode;
+            console.log(`Realtime mode change detected: ${newMode}`);
+            if (newMode) dispatch({ type: "SET_MODE", mode: newMode });
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        console.log(`Realtime sync status: ${status}`, err);
+      });
+
+    return () => {
+      console.log("Cleaning up realtime channel");
+      supabase.removeChannel(channel);
+    };
+  }, [participantId]);
+
+  // Log Trials & Publish Realtime Stats to participant_state
+  useEffect(() => {
+    if (state.feedback !== null && participantId && state.mode !== "REST") {
+      
+      const logSessionData = async () => {
+        // 1. Log the trial
+        const { error: trialError } = await supabase.from('trials').insert({
+          participant_id: participantId,
+          condition_type: state.mode,
+          difficulty_level: state.difficultyLevel,
+          problem: state.currentTask,
+          user_answer: state.selectedDigit,
+          is_correct: state.feedback === "correct",
+          response_time_ms: state.responseTime,
+          current_limit_ms: state.timeLimit
+        });
+        if (trialError) console.error("Trial Log:", trialError);
+
+        // 2. Publish updated real-time stats to the admin via participant_state
+        const { error: stateError } = await supabase.from('participant_state').update({
+          accuracy: state.accuracy,
+          latest_response_time: state.responseTime,
+          updated_at: new Date().toISOString()
+        }).eq('participant_id', participantId);
+        if (stateError) console.error("State Log:", stateError);
+      };
+
+      logSessionData();
+    }
+  }, [state.totalAnswered, state.feedback, participantId, state.mode]);
 
   // Feedback → next task transition
   useEffect(() => {
@@ -128,19 +275,38 @@ const ExperimentController = () => {
     return () => window.removeEventListener("keydown", handleKey);
   }, [state.mode, isShowingFeedback]);
 
+  if (!participantId) {
+    return <div className="flex h-screen items-center justify-center">Loading Session...</div>;
+  }
+
+  const logoutButton = (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      onClick={handleLogout} 
+      className="absolute top-4 right-4 items-center gap-2 border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition-all z-50 shadow-sm"
+    >
+      <LogOut className="w-4 h-4" />
+      Exit
+    </Button>
+  );
+
   if (state.mode === "REST") {
     return (
-      <>
+      <div className="fixed inset-0 bg-background">
+        {logoutButton}
         <RestScreen />
-        <ModeSelector current={state.mode} onChange={(m) => dispatch({ type: "SET_MODE", mode: m })} />
-      </>
+        <WaitMessage />
+      </div>
     );
   }
+
 
   const isStress = state.mode === "STRESS";
 
   return (
     <div className="fixed inset-0 flex flex-col bg-background overflow-hidden select-none">
+      {logoutButton}
       {/* Performance bars - stress only */}
       {isStress && (
         <div className="pt-6 pb-2">
@@ -170,44 +336,19 @@ const ExperimentController = () => {
       </div>
 
       {/* Stats bar */}
-      <div className="pb-4 flex justify-center gap-8 text-xs font-mono-experiment text-muted-foreground">
-        <span>Trial: {state.totalAnswered + 1}</span>
-        <span>Accuracy: {state.totalAnswered > 0 ? Math.round(state.accuracy * 100) : 0}%</span>
+      <div className="pb-4 flex flex-col items-center gap-2 text-xs font-mono-experiment text-slate-900 font-bold">
+        <span>Mode: {state.mode}</span>
       </div>
 
-      {/* Feedback overlay */}
       <FeedbackOverlay feedback={state.feedback} />
-
-      {/* Mode selector */}
-      <ModeSelector current={state.mode} onChange={(m) => dispatch({ type: "SET_MODE", mode: m })} />
     </div>
   );
 };
 
-// Floating mode selector for demo
-function ModeSelector({
-  current,
-  onChange,
-}: {
-  current: ExperimentMode;
-  onChange: (m: ExperimentMode) => void;
-}) {
-  const modes: ExperimentMode[] = ["REST", "CONTROL", "STRESS"];
+function WaitMessage() {
   return (
-    <div className="fixed bottom-4 right-4 flex gap-1 bg-card border border-border rounded-lg p-1 z-50">
-      {modes.map((m) => (
-        <button
-          key={m}
-          onClick={() => onChange(m)}
-          className={`px-3 py-1.5 rounded-md text-xs font-mono-experiment transition-colors ${
-            current === m
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {m}
-        </button>
-      ))}
+    <div className="fixed bottom-8 w-full text-center text-slate-900 text-sm animate-pulse font-mono-experiment font-bold">
+      Waiting for Investigator...
     </div>
   );
 }

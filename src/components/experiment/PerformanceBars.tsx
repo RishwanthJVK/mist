@@ -1,9 +1,22 @@
+import { useState, useEffect } from "react";
+
 interface PerformanceBarsProps {
   userAccuracy: number; // 0-1
 }
 
 const PerformanceBars = ({ userAccuracy }: PerformanceBarsProps) => {
-  const fakeAverage = 0.85;
+  const [fakeAverage, setFakeAverage] = useState(0.85);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Fluctuate between 77% and 88%
+      const newAverage = Math.random() * (0.88 - 0.77) + 0.77;
+      setFakeAverage(newAverage);
+    }, 1500); // update every 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-3 px-4">
@@ -15,12 +28,12 @@ const PerformanceBars = ({ userAccuracy }: PerformanceBarsProps) => {
         </div>
         <div className="h-4 rounded-full bg-secondary overflow-hidden relative">
           <div
-            className="h-full bg-perf-good rounded-full"
+            className="h-full bg-perf-good rounded-full transition-all duration-1000 ease-in-out"
             style={{ width: `${fakeAverage * 100}%` }}
           />
           {/* Arrow marker */}
           <div
-            className="absolute top-full mt-0.5 -translate-x-1/2"
+            className="absolute top-full mt-0.5 -translate-x-1/2 transition-all duration-1000 ease-in-out"
             style={{ left: `${fakeAverage * 100}%` }}
           >
             <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-perf-good" />
