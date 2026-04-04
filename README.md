@@ -48,7 +48,7 @@ Installation
 Clone the repo:
 
 Bash
-git clone [https://github.com/your-username/mist.git](https://github.com/your-username/mist.git)
+git clone [https://github.com/RishwanthJVK/mist.git](https://github.com/RishwanthJVK/mist.git)
 Install dependencies:
 
 Bash
