@@ -139,13 +139,14 @@ export default function AdminDashboard() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [editUsername, setEditUsername] = useState("");
   const [editPassword, setEditPassword] = useState("");
+  const [activeGlobalTrigger, setActiveGlobalTrigger] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     if (!adminSupabase) return;
     const { data, error } = await adminSupabase.auth.admin.listUsers();
     if (data?.users) {
       // Filter for participants (those with @mist.local email)
-      const participantsOnly = data.users.filter(u => u.email?.endsWith("@mist.local"));
+      const participantsOnly = data.users.filter((u: any) => u.email?.endsWith("@mist.local"));
       setAllUsers(participantsOnly);
     }
   };
@@ -210,6 +211,7 @@ export default function AdminDashboard() {
       toast({ title: "Failed to create", description: error.message, variant: "destructive" });
     } finally {
       setIsCreating(false);
+      fetchUsers();
     }
   };
 
@@ -225,6 +227,7 @@ export default function AdminDashboard() {
     if (error) {
       toast({ title: "Failed to set mode", description: error.message, variant: "destructive" });
     } else {
+      setActiveGlobalTrigger(null);
       toast({ title: `Mode set to ${mode}` });
     }
   };
@@ -252,6 +255,7 @@ export default function AdminDashboard() {
     } else {
       setGlobalTimerActive(false);
       setGlobalTimeLeft(0);
+      setActiveGlobalTrigger(mode);
       toast({ title: `All sessions set to ${mode}` });
     }
 
@@ -291,7 +295,9 @@ export default function AdminDashboard() {
     } catch (error: any) {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
     } finally {
+      if (editingUser?.id === participantId) setEditingUser(null);
       fetchParticipants();
+      fetchUsers();
     }
   };
 
@@ -330,7 +336,7 @@ export default function AdminDashboard() {
         <div className="flex justify-between items-center bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-              Investigator <span className="text-primary italic">Dashboard</span>
+              Admin <span className="text-primary italic">Dashboard</span>
             </h1>
             <p className="text-slate-500 text-sm mt-1 font-bold uppercase tracking-wider opacity-70">Manage participants and monitor session data.</p>
           </div>
@@ -392,10 +398,14 @@ export default function AdminDashboard() {
               {["REST", "TRAINING", "CONTROL", "STRESS"].map((mode) => (
                 <Button
                   key={mode}
-                  variant="outline"
+                  variant={activeGlobalTrigger === mode ? "default" : "outline"}
                   onClick={() => setGlobalMode(mode)}
                   disabled={participants.length === 0}
-                  className="bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-bold transition-all rounded-xl shadow-sm"
+                  className={`font-bold transition-all rounded-xl shadow-sm ${
+                    activeGlobalTrigger === mode 
+                      ? "bg-primary text-white border-none scale-[1.02] shadow-primary/20" 
+                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
                 >
                   Set all to {mode} {globalDuration ? "(Timed)" : ""}
                 </Button>
@@ -516,30 +526,7 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                         
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-10 w-10 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl">
-                              <Trash2 className="w-5 h-5" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-white border-slate-200 text-slate-900">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Delete Participant?</AlertDialogTitle>
-                              <AlertDialogDescription className="text-slate-500 font-medium">
-                                Are you sure you want to delete <span className="text-slate-900 font-bold">"{p.username}"</span>? This will permanently remove their access and all associated trial data.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter className="gap-3">
-                              <AlertDialogCancel className="bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200 rounded-xl font-bold">Cancel</AlertDialogCancel>
-                              <AlertDialogAction 
-                                onClick={() => handleRemoveParticipant(p.participant_id, p.username)}
-                                className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
-                              >
-                                Delete Session
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+
                       </div>
 
                       <div className="grid grid-cols-4 gap-2.5">
@@ -598,18 +585,45 @@ export default function AdminDashboard() {
                               <p className="font-black text-slate-900 uppercase tracking-tight text-lg">{u.email.split('@')[0]}</p>
                               <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-tighter">{u.id}</p>
                             </div>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => {
-                                setEditingUser(u);
-                                setEditUsername(u.email.split('@')[0]);
-                                setEditPassword("");
-                              }}
-                              className="bg-white hover:bg-primary hover:text-white border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm rounded-xl h-9 px-4"
-                            >
-                              Edit Details
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => {
+                                  setEditingUser(u);
+                                  setEditUsername(u.email.split('@')[0]);
+                                  setEditPassword("");
+                                }}
+                                className="bg-white hover:bg-primary hover:text-white border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm rounded-xl h-9 px-4"
+                              >
+                                Edit Details
+                              </Button>
+
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button size="icon" variant="ghost" className="h-9 w-9 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl shadow-sm border border-slate-200">
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-white border-slate-200 text-slate-900">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Delete Participant?</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-slate-500 font-medium">
+                                      Are you sure you want to delete <span className="text-slate-900 font-bold">"{u.email.split('@')[0]}"</span>? This will permanently remove their access and all associated trial data.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter className="gap-3">
+                                    <AlertDialogCancel className="bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200 hover:text-slate-900 rounded-xl font-bold">Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => handleRemoveParticipant(u.id, u.email.split('@')[0])}
+                                      className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
+                                    >
+                                      Delete Participant
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
                           </div>
                         ))
                       )}

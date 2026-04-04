@@ -164,6 +164,9 @@ const ExperimentController = () => {
 
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to exit the session?")) {
+      if (participantId) {
+        await supabase.from('participant_state').delete().eq('participant_id', participantId);
+      }
       await supabase.auth.signOut();
       navigate('/');
     }
@@ -202,16 +205,32 @@ const ExperimentController = () => {
       .on(
         'postgres_changes',
         {
-          event: 'UPDATE',
+          event: '*', // Listen to ALL events (UPDATE & DELETE)
           schema: 'public',
           table: 'participant_state',
         },
-        (payload) => {
+        async (payload) => {
           console.log("Realtime payload received in Experiment:", payload);
-          if (payload.new && payload.new.participant_id === participantId) {
-            const newMode = payload.new.current_mode as ExperimentMode;
-            console.log(`Realtime mode change detected: ${newMode}`);
-            if (newMode) dispatch({ type: "SET_MODE", mode: newMode });
+          
+          // Handle DELETION (Force Logout)
+          if (payload.eventType === 'DELETE') {
+             const oldData = payload.old as any;
+             if (oldData && oldData.participant_id === participantId) {
+                console.log("Account deletion detected. Forcing logout...");
+                await supabase.auth.signOut();
+                navigate('/');
+             }
+             return;
+          }
+
+          // Handle UPDATE (Mode Change)
+          if (payload.eventType === 'UPDATE') {
+             const newData = payload.new as any;
+             if (newData && newData.participant_id === participantId) {
+               const newMode = newData.current_mode as ExperimentMode;
+               console.log(`Realtime mode change detected: ${newMode}`);
+               if (newMode) dispatch({ type: "SET_MODE", mode: newMode });
+             }
           }
         }
       )
@@ -372,7 +391,7 @@ const ExperimentController = () => {
 function WaitMessage() {
   return (
     <div className="fixed bottom-8 w-full text-center text-slate-300 text-sm animate-pulse font-mono-experiment font-bold">
-      Waiting for Investigator...
+      Waiting for Admin...
     </div>
   );
 }

@@ -44,7 +44,7 @@ const Login = () => {
         .maybeSingle();
         
       if (roleData?.role === 'admin') {
-         toast({ title: "Admin detected", description: "Please use the Investigator login portal.", variant: "destructive" });
+         toast({ title: "Admin detected", description: "Please use the Admin login portal.", variant: "destructive" });
          await supabase.auth.signOut();
          return;
       }
@@ -128,7 +128,7 @@ const Login = () => {
           
           <CardHeader className="pb-4 pt-10 text-center">
             <CardTitle className="text-3xl font-black text-white tracking-tight">
-              {isAdminView ? "Investigator Portal" : "Login"}
+              {isAdminView ? "Admin Portal" : "Login"}
             </CardTitle>
           </CardHeader>
 
@@ -178,7 +178,7 @@ const Login = () => {
                     className="w-full h-14 text-lg font-bold border-slate-700 bg-slate-800/40 text-slate-300 hover:bg-slate-800 hover:text-white rounded-2xl transition-all"
                   >
                     <ShieldCheck className="w-5 h-5 mr-3 opacity-60" />
-                    Login as Investigator
+                    Login as Admin
                   </Button>
                 </div>
               </form>
@@ -186,7 +186,7 @@ const Login = () => {
               <form onSubmit={handleAdminLogin} className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-500">
                 <div className="space-y-5">
                   <div className="space-y-2.5">
-                    <Label htmlFor="adminEmail" className="text-slate-300 text-xs font-black uppercase tracking-wider ml-1">Investigator Email</Label>
+                    <Label htmlFor="adminEmail" className="text-slate-300 text-xs font-black uppercase tracking-wider ml-1">Admin Email</Label>
                     <Input 
                       id="adminEmail" 
                       type="email"

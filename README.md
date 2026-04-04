@@ -21,8 +21,8 @@ The core of the Experimental condition is an Induced Failure algorithm:
 
 ### 2. Social Evaluative Threat (UI)
 * [cite_start]**Dual Performance Bars:** Displays the participant's individual performance against a fake high-performing average[cite: 63, 100, 101].
-* **Role-Based Access (RBAC):** Includes an Admin Dashboard for investigators to manage participants and remotely trigger Rest, Control, and Experimental sessions.
-* [cite_start]**Feedback Interstitials:** Controlled intervals between runs where the investigator provides negative verbal feedback to increase cortisol response[cite: 102, 103, 166].
+* **Role-Based Access (RBAC):** Includes an Admin Dashboard for Admins to manage participants and remotely trigger Rest, Control, and Experimental sessions.
+* [cite_start]**Feedback Interstitials:** Controlled intervals between runs where the Admin provides negative verbal feedback to increase cortisol response[cite: 102, 103, 166].
 
 ---
 

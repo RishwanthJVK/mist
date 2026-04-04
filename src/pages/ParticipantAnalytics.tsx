@@ -274,7 +274,7 @@ export default function ParticipantAnalytics() {
           <TabsContent value={selectedState} className="mt-6">
             <Card className="bg-white border-slate-200 shadow-sm rounded-2xl overflow-hidden border-none shadow-xl">
               <CardHeader className="bg-white border-b border-slate-100 p-6">
-                <CardTitle className="text-xl font-black text-slate-900 tracking-tight">{selectedState} State - Investigator Dataset</CardTitle>
+                <CardTitle className="text-xl font-black text-slate-900 tracking-tight">{selectedState} State - Admin Dataset</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
