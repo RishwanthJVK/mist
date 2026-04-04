@@ -143,7 +143,7 @@ const Login = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="e.g. SUBJ-001" 
-                      className="h-14 bg-slate-900/60 border-slate-800 text-white placeholder:text-slate-600 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all text-lg font-medium"
+                      className="h-14 bg-slate-900/60 border-slate-500 text-white placeholder:text-slate-600 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all text-lg font-medium autofill:bg-slate-900/60 autofill:text-white autofill:shadow-[inset_0_0_0_1000px_rgb(15_23_42/60)] autofill:[color-scheme:dark]"
                       required 
                     />
                   </div>
@@ -154,7 +154,7 @@ const Login = () => {
                       type="password"
                       value={participantPassword}
                       onChange={(e) => setParticipantPassword(e.target.value)}
-                      className="h-14 bg-slate-900/60 border-slate-800 text-white rounded-2xl focus:ring-primary/20 focus:border-primary transition-all"
+                      className="h-14 bg-slate-900/60 border-slate-500 text-white rounded-2xl focus:ring-primary/20 focus:border-primary transition-all autofill:bg-slate-900/60 autofill:text-white autofill:shadow-[inset_0_0_0_1000px_rgb(15_23_42/60)] autofill:[color-scheme:dark]"
                       required 
                     />
                   </div>
@@ -193,7 +193,7 @@ const Login = () => {
                       value={adminEmail}
                       onChange={(e) => setAdminEmail(e.target.value)}
                       placeholder="admin@mist.com" 
-                      className="h-14 bg-slate-900/60 border-slate-800 text-white placeholder:text-slate-600 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all text-lg font-medium"
+                      className="h-14 bg-slate-900/60 border-slate-500 text-white placeholder:text-slate-600 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all text-lg font-medium autofill:bg-slate-900/60 autofill:text-white autofill:shadow-[inset_0_0_0_1000px_rgb(15_23_42/60)] autofill:[color-scheme:dark]"
                       required 
                     />
                   </div>
@@ -204,14 +204,14 @@ const Login = () => {
                       type="password"
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
-                      className="h-14 bg-slate-900/60 border-slate-800 text-white rounded-2xl focus:ring-primary/20 focus:border-primary transition-all"
+                      className="h-14 bg-slate-900/60 border-slate-500 text-white rounded-2xl focus:ring-primary/20 focus:border-primary transition-all autofill:bg-slate-900/60 autofill:text-white autofill:shadow-[inset_0_0_0_1000px_rgb(15_23_42/60)] autofill:[color-scheme:dark]"
                       required 
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <Button type="submit" variant="secondary" className="w-full h-14 text-lg font-black bg-white hover:bg-slate-200 text-[#0B0F1A] rounded-2xl shadow-xl transition-all border-none" disabled={isAdminLoading}>
+                  <Button type="submit" className="w-full h-14 text-lg font-black group rounded-2xl shadow-lg hover:shadow-primary/20 bg-primary hover:bg-primary/90 transition-all border-none" disabled={isAdminLoading}>
                     {isAdminLoading ? "Authenticating..." : "Access Dashboard"}
                   </Button>
 

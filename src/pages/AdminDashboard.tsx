@@ -324,28 +324,28 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <div className="min-h-screen bg-white p-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
 
-        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div className="flex justify-between items-center bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
               Investigator <span className="text-primary italic">Dashboard</span>
             </h1>
-            <p className="text-slate-800 text-sm mt-1 font-medium">Manage participants and monitor session data.</p>
+            <p className="text-slate-500 text-sm mt-1 font-bold uppercase tracking-wider opacity-70">Manage participants and monitor session data.</p>
           </div>
           <div className="flex gap-3 items-center">
             <Button 
               variant="outline" 
               onClick={() => navigate("/admin/analytics")} 
-              className="hover:bg-slate-50 border-primary/30 text-primary font-bold shadow-sm rounded-xl px-5 h-11 transition-all hover:scale-[1.02]"
+              className="gap-2 bg-white border-slate-300 text-primary hover:bg-primary hover:text-white rounded-xl font-bold transition-all shadow-sm active:scale-[0.98]"
             >
-              <BarChart3 className="w-4 h-4 mr-2" /> Participant Analytics
+              <BarChart3 className="w-4 h-4" /> Participant Analytics
             </Button>
             <Button 
               variant="outline" 
               onClick={handleSignOut} 
-              className="hover:bg-red-50 hover:text-red-600 hover:border-red-200 border-slate-200 rounded-xl px-5 h-11 transition-all"
+              className="bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 border-slate-200 text-slate-600 rounded-xl px-5 h-11 transition-all active:scale-[0.98]"
             >
               <LogOut className="w-4 h-4 mr-2" /> Sign Out
             </Button>
@@ -362,27 +362,27 @@ export default function AdminDashboard() {
         )}
 
         {/* Global Trigger */}
-        <Card className="bg-slate-100 border-dashed">
+        <Card className="bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
           <CardHeader className="py-4">
-            <CardTitle className="text-lg text-slate-700">Global Trigger (All Active Participants)</CardTitle>
+            <CardTitle className="text-lg font-black text-slate-900 uppercase tracking-wider opacity-90">Global Trigger (All Active Participants)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pb-4">
             <div className="flex items-center gap-4">
               <div className="flex-1 max-w-[200px]">
-                <Label htmlFor="global-duration" className="text-xs font-bold text-slate-700">Optional Duration (min)</Label>
+                <Label htmlFor="global-duration" className="text-xs font-black text-slate-500 uppercase tracking-widest">Optional Duration (min)</Label>
                 <Input
                   id="global-duration"
                   type="number"
                   placeholder="e.g. 10"
                   value={globalDuration}
                   onChange={(e) => setGlobalDuration(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl"
                 />
               </div>
               {globalTimerActive && (
-                <div className="flex-1 bg-amber-100 border border-amber-200 rounded p-2 text-center animate-pulse">
-                  <p className="text-xs font-bold text-amber-800">TIMER ACTIVE</p>
-                  <p className="text-lg font-mono text-amber-900">
+                <div className="flex-1 bg-primary/10 border border-primary/20 rounded-xl p-2 text-center animate-pulse">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">TIMER ACTIVE</p>
+                  <p className="text-xl font-mono text-primary font-bold tracking-tighter">
                     {Math.floor(globalTimeLeft / 60)}:{(globalTimeLeft % 60).toString().padStart(2, '0')}
                   </p>
                 </div>
@@ -395,6 +395,7 @@ export default function AdminDashboard() {
                   variant="outline"
                   onClick={() => setGlobalMode(mode)}
                   disabled={participants.length === 0}
+                  className="bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-bold transition-all rounded-xl shadow-sm"
                 >
                   Set all to {mode} {globalDuration ? "(Timed)" : ""}
                 </Button>
@@ -404,14 +405,14 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Danger Zone — Clear All Data */}
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 bg-red-50/50">
           <CardHeader className="py-4">
-            <CardTitle className="text-lg text-red-700">⚠️ Danger Zone</CardTitle>
+            <CardTitle className="text-lg text-red-700 font-black uppercase tracking-wider">⚠️ Danger Zone</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between pb-4">
             <div>
-              <p className="text-sm font-medium text-red-800">Clear All Collected Data</p>
-              <p className="text-xs text-red-600 mt-0.5">
+              <p className="text-sm font-bold text-red-800">Clear All Collected Data</p>
+              <p className="text-xs text-red-600 mt-0.5 font-medium">
                 Permanently deletes all trial records for all participants. Accounts are kept.
               </p>
             </div>
@@ -420,21 +421,21 @@ export default function AdminDashboard() {
                 <Button
                   variant="destructive"
                   disabled={isClearing}
-                  className="shrink-0"
+                  className="shrink-0 font-black uppercase tracking-widest text-xs h-10 px-6 rounded-xl shadow-lg shadow-red-500/20"
                 >
                   {isClearing ? "Clearing..." : "Clear All Data"}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="bg-white border-slate-200 text-slate-900">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-red-600">Are you absolutely certain?</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="text-2xl font-black text-red-600 uppercase tracking-tight">Are you absolutely certain?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-slate-500 font-medium">
                     This will permanently delete ALL collected trial data for ALL participants. This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700">
+                <AlertDialogFooter className="gap-3">
+                  <AlertDialogCancel className="bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200 rounded-xl font-bold">Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700 text-white font-black rounded-xl">
                     Yes, Clear All Data
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -445,31 +446,33 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Create Participant Form */}
-          <Card className="col-span-1">
+          <Card className="col-span-1 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle>Add New Participant</CardTitle>
+              <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">Add New Participant</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleCreateParticipant} className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Username (ID)</Label>
+              <form onSubmit={handleCreateParticipant} className="space-y-5">
+                <div className="space-y-2.5">
+                  <Label className="text-slate-500 font-black uppercase tracking-widest text-[11px] ml-1">Username (ID)</Label>
                   <Input
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     placeholder="e.g. SUBJ-001"
+                    className="h-12 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl focus:ring-primary/20 font-bold"
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Password</Label>
+                <div className="space-y-2.5">
+                  <Label className="text-slate-500 font-black uppercase tracking-widest text-[11px] ml-1">Password</Label>
                   <Input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    className="h-12 bg-white border-slate-200 text-slate-900 rounded-xl focus:ring-primary/20 font-bold"
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isCreating}>
+                <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.15em] text-xs shadow-lg shadow-primary/20 rounded-xl transition-all active:scale-[0.98]" disabled={isCreating}>
                   {isCreating ? "Creating..." : "Create Account"}
                 </Button>
               </form>
@@ -477,67 +480,84 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Active Participants List */}
-          <Card className="col-span-1 md:col-span-2">
-            <CardHeader>
-              <CardTitle>Active Sessions</CardTitle>
+          <Card className="col-span-1 md:col-span-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-6">
+              <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">Active Sessions</CardTitle>
+              <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ring-1 ring-primary/20">
+                {participants.length} Active
+              </span>
             </CardHeader>
             <CardContent>
               {participants.length === 0 ? (
-                <p className="text-slate-500 text-sm">No participants found.</p>
+                <div className="h-48 flex flex-center justify-center items-center text-slate-400 font-bold uppercase tracking-widest text-xs italic">
+                  No active sessions found.
+                </div>
               ) : (
                 <div className="space-y-4">
                   {participants.map((p) => (
                     <div
                       key={p.participant_id}
-                      className="p-4 border rounded-lg bg-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                      className="p-5 border border-slate-200 rounded-2xl bg-white flex flex-col gap-5 transition-all hover:border-primary/30 group shadow-sm"
                     >
-                      <div>
-                        <h3 className="font-extrabold text-lg text-slate-900 uppercase tracking-tight">{p.username}</h3>
-                        <div className="text-sm text-slate-700 mt-1 flex gap-6 font-medium">
-                          <span className="flex items-center gap-2">
-                            Session Status: <strong className="text-primary font-black uppercase tracking-widest text-xs">{p.current_mode}</strong>
-                            <span className="text-xs text-slate-400 font-mono font-bold bg-slate-100 px-2 py-0.5 rounded-full ring-1 ring-slate-200">(<LiveTimer startTime={p.mode_started_at} />)</span>
-                          </span>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight group-hover:text-primary transition-colors">{p.username}</h3>
+                          <div className="flex items-center gap-4">
+                             <div className="flex items-center gap-2">
+                               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Status:</span>
+                               <span className="text-xs font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-md">{p.current_mode}</span>
+                             </div>
+                             <div className="flex items-center gap-2">
+                               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Elapsed:</span>
+                               <span className="text-xs font-mono text-primary font-bold bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
+                                 <LiveTimer startTime={p.mode_started_at} />
+                               </span>
+                             </div>
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row gap-4 items-center">
-                        <div className="flex flex-wrap gap-2">
-                          {["REST", "TRAINING", "CONTROL", "STRESS"].map((mode) => (
-                            <Button
-                              key={mode}
-                              size="sm"
-                              variant={p.current_mode === mode ? "default" : "outline"}
-                              onClick={() => setMode(p.participant_id, mode)}
-                            >
-                              {mode}
-                            </Button>
-                          ))}
-                        </div>
+                        
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button size="sm" variant="destructive">
-                              Delete
+                            <Button size="icon" variant="ghost" className="h-10 w-10 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl">
+                              <Trash2 className="w-5 h-5" />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
+                          <AlertDialogContent className="bg-white border-slate-200 text-slate-900">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Participant?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete "{p.username}"? This will permanently remove their access and all associated trial data.
+                              <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Delete Participant?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-slate-500 font-medium">
+                                Are you sure you want to delete <span className="text-slate-900 font-bold">"{p.username}"</span>? This will permanently remove their access and all associated trial data.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogFooter className="gap-3">
+                              <AlertDialogCancel className="bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200 rounded-xl font-bold">Cancel</AlertDialogCancel>
                               <AlertDialogAction 
                                 onClick={() => handleRemoveParticipant(p.participant_id, p.username)}
-                                className="bg-red-600 hover:bg-red-700"
+                                className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
                               >
-                                Delete
+                                Delete Session
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-2.5">
+                        {["REST", "TRAINING", "CONTROL", "STRESS"].map((mode) => (
+                          <Button
+                            key={mode}
+                            size="sm"
+                            variant={p.current_mode === mode ? "default" : "outline"}
+                            onClick={() => setMode(p.participant_id, mode)}
+                            className={`h-10 font-black uppercase tracking-widest text-[10px] transition-all rounded-xl ${
+                              p.current_mode === mode 
+                                ? "bg-primary text-white border-none shadow-md scale-[1.02]" 
+                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                            }`}
+                          >
+                            {mode}
+                          </Button>
+                        ))}
                       </div>
                     </div>
                   ))}
@@ -547,35 +567,46 @@ export default function AdminDashboard() {
           </Card>
 
           {/* User Account Details Section */}
-          <Card className="col-span-1 md:col-span-3">
-            <CardHeader>
-              <CardTitle>User Account Management</CardTitle>
+          <Card className="col-span-1 md:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">User Account Management</CardTitle>
             </CardHeader>
             <CardContent>
               {!serviceRoleKey ? (
-                <p className="text-amber-600 text-sm italic">Manage accounts requires VITE_SUPABASE_SERVICE_ROLE_KEY.</p>
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm font-bold italic text-center">
+                  Manage accounts requires VITE_SUPABASE_SERVICE_ROLE_KEY.
+                </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <p className="text-sm text-slate-500 mb-2">Existing participant accounts:</p>
-                    <div className="border rounded-lg divide-y bg-white">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-sm font-black text-slate-900 uppercase tracking-[0.15em] flex items-center gap-2">
+                        <Users className="w-4 h-4 text-primary" />
+                        Existing Participant Accounts
+                      </p>
+                      <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-3 py-1.5 rounded-full ring-1 ring-slate-200 uppercase tracking-widest">
+                        {allUsers.length} Logged
+                      </span>
+                    </div>
+                    <div className="border border-slate-200 divide-y divide-slate-200 bg-white rounded-2xl shadow-sm max-h-[450px] overflow-y-auto custom-scrollbar">
                       {allUsers.length === 0 ? (
-                        <p className="p-4 text-center text-slate-400">No participant accounts found.</p>
+                        <p className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs italic">No participant accounts found.</p>
                       ) : (
                         allUsers.map((u) => (
-                          <div key={u.id} className="p-4 flex justify-between items-center group hover:bg-slate-50 transition-colors">
+                          <div key={u.id} className="p-5 flex justify-between items-center group hover:bg-slate-50 transition-all border-l-4 border-l-transparent hover:border-l-primary">
                             <div>
-                              <p className="font-bold text-slate-900">{u.email.split('@')[0]}</p>
-                              <p className="text-xs text-slate-400">{u.id}</p>
+                              <p className="font-black text-slate-900 uppercase tracking-tight text-lg">{u.email.split('@')[0]}</p>
+                              <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-tighter">{u.id}</p>
                             </div>
                             <Button 
-                              variant="ghost" 
+                              variant="outline" 
                               size="sm" 
                               onClick={() => {
                                 setEditingUser(u);
                                 setEditUsername(u.email.split('@')[0]);
                                 setEditPassword("");
                               }}
+                              className="bg-white hover:bg-primary hover:text-white border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm rounded-xl h-9 px-4"
                             >
                               Edit Details
                             </Button>
@@ -586,33 +617,42 @@ export default function AdminDashboard() {
                   </div>
 
                   {editingUser && (
-                    <Card className="bg-slate-50 border-primary/20 shadow-lg">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-md">Editing: <span className="text-primary font-mono">{editingUser.email.split('@')[0]}</span></CardTitle>
+                    <Card className="bg-white border-2 border-primary/30 shadow-xl rounded-2xl overflow-hidden animate-in fade-in slide-in-from-right-8 duration-500">
+                      <div className="h-2 w-full bg-primary" />
+                      <CardHeader className="pb-4 pt-8 text-center">
+                        <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">
+                          Editing: <span className="text-primary font-mono bg-white px-3 py-1 rounded-lg border border-primary/10 shadow-sm">{editingUser.email.split('@')[0]}</span>
+                        </CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <form onSubmit={handleUpdateUser} className="space-y-4">
-                          <div className="space-y-2">
-                            <Label className="text-xs">New Username (ID)</Label>
+                      <CardContent className="space-y-8 px-8 pb-10">
+                        <form onSubmit={handleUpdateUser} className="space-y-6">
+                          <div className="space-y-2.5">
+                            <Label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">New Username (ID)</Label>
                             <Input 
                               value={editUsername} 
                               onChange={(e) => setEditUsername(e.target.value)} 
                               placeholder="New username"
+                              className="h-14 bg-white border-slate-200 focus:ring-primary/20 text-slate-900 font-bold rounded-xl placeholder:text-slate-400"
                             />
                           </div>
-                          <div className="space-y-2">
-                            <Label className="text-xs">Update Password</Label>
+                          <div className="space-y-2.5">
+                            <Label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Update Password</Label>
                             <Input 
                               type="password" 
                               value={editPassword} 
                               onChange={(e) => setEditPassword(e.target.value)} 
                               placeholder="New password (leave blank to keep)"
+                              className="h-14 bg-white border-slate-200 focus:ring-primary/20 text-slate-900 font-bold rounded-xl placeholder:text-slate-400"
                             />
-                            <p className="text-[10px] text-slate-400">Passwords are never shown for security. You can only reset them.</p>
+                            <div className="bg-white p-3 rounded-xl border border-slate-200 mt-4 shadow-sm">
+                              <p className="text-[10px] font-bold text-slate-500 leading-relaxed italic">
+                                Note: Passwords are encrypted and cannot be recovered. You can only set a new one.
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex gap-2 pt-2">
-                            <Button type="submit" className="flex-1">Save Changes</Button>
-                            <Button variant="outline" onClick={() => setEditingUser(null)}>Cancel</Button>
+                          <div className="flex gap-4 pt-4">
+                            <Button type="submit" className="flex-1 h-14 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.15em] text-xs shadow-lg shadow-primary/20 rounded-xl transition-all">Save Changes</Button>
+                            <Button variant="outline" onClick={() => setEditingUser(null)} className="flex-1 h-14 bg-white border-slate-200 text-slate-600 hover:bg-slate-100 font-black uppercase tracking-[0.15em] text-xs rounded-xl transition-all">Cancel</Button>
                           </div>
                         </form>
                       </CardContent>

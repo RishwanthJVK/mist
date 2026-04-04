@@ -56,12 +56,22 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
         trainingResponseTimes.push(responseTime);
       }
 
+      // Track stress-specific answers
+      let stressTotalAnswered = state.stressTotalAnswered;
+      let stressTotalCorrect = state.stressTotalCorrect;
+      if (state.mode === "STRESS") {
+        stressTotalAnswered += 1;
+        stressTotalCorrect += isCorrect ? 1 : 0;
+      }
+
       return {
         ...state,
         responseTime,
         feedback: isCorrect ? "correct" : "incorrect",
         totalAnswered,
         totalCorrect,
+        stressTotalAnswered,
+        stressTotalCorrect,
         accuracy,
         consecutiveCorrect,
         consecutiveIncorrect,
@@ -72,12 +82,20 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
     case "TIMEOUT": {
       const totalAnswered = state.totalAnswered + 1;
       const accuracy = state.totalCorrect / totalAnswered;
+
+      // Track stress-specific answers for timeout
+      let stressTotalAnswered = state.stressTotalAnswered;
+      if (state.mode === "STRESS") {
+        stressTotalAnswered += 1;
+      }
+
       return {
         ...state,
         responseTime: state.timeLimit,
         feedback: "timeout",
         totalAnswered,
         accuracy,
+        stressTotalAnswered,
         consecutiveCorrect: 0,
         consecutiveIncorrect: state.consecutiveIncorrect + 1,
       };
@@ -284,7 +302,7 @@ const ExperimentController = () => {
       variant="outline" 
       size="sm" 
       onClick={handleLogout} 
-      className="absolute top-4 right-4 items-center gap-2 border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition-all z-50 shadow-sm"
+      className="absolute top-4 right-4 items-center gap-2 border-slate-500 text-white font-bold hover:bg-slate-800/50 hover:border-slate-400 transition-all z-50 shadow-sm"
     >
       <LogOut className="w-4 h-4" />
       Exit
@@ -293,30 +311,36 @@ const ExperimentController = () => {
 
   if (state.mode === "REST") {
     return (
-      <div className="fixed inset-0 bg-background">
+      <div className="fixed inset-0 bg-[#0B0F1A]">
         {logoutButton}
         <RestScreen />
-        <WaitMessage />
       </div>
     );
   }
 
 
   const isStress = state.mode === "STRESS";
+  
+  // Calculate stress-specific accuracy for the performance bar
+  const stressAccuracy = state.stressTotalAnswered > 0 
+    ? state.stressTotalCorrect / state.stressTotalAnswered 
+    : 0;
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden select-none">
+    <div className="fixed inset-0 flex flex-col bg-[#0B0F1A] overflow-hidden select-none font-sans">
+      <div className="absolute inset-0 bg-grid-slate-800 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.1))] pointer-events-none" />
+      
       {logoutButton}
       {/* Performance bars - stress only */}
       {isStress && (
-        <div className="pt-6 pb-2">
-          <PerformanceBars userAccuracy={state.accuracy} />
+        <div className="pt-6 pb-2 relative z-10">
+          <PerformanceBars userAccuracy={stressAccuracy} />
         </div>
       )}
 
       {/* Timer - stress only */}
       {isStress && state.timeLimit > 0 && (
-        <div className="px-8 py-3">
+        <div className="px-8 py-3 relative z-10">
           <TimerBar
             startTime={state.startTime}
             timeLimit={state.timeLimit}
@@ -327,7 +351,7 @@ const ExperimentController = () => {
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-10">
+      <div className="flex-1 flex flex-col items-center justify-center gap-10 relative z-10">
         <TaskDisplay expression={state.currentTask} />
         <RotaryDial
           selectedDigit={state.selectedDigit}
@@ -336,8 +360,8 @@ const ExperimentController = () => {
       </div>
 
       {/* Stats bar */}
-      <div className="pb-4 flex flex-col items-center gap-2 text-xs font-mono-experiment text-slate-900 font-bold">
-        <span>Mode: {state.mode}</span>
+      <div className="pb-4 flex flex-col items-center gap-2 text-xs font-mono-experiment text-slate-400 font-bold relative z-10">
+        <span className="opacity-60 uppercase tracking-widest">Mode: {state.mode}</span>
       </div>
 
       <FeedbackOverlay feedback={state.feedback} />
@@ -347,7 +371,7 @@ const ExperimentController = () => {
 
 function WaitMessage() {
   return (
-    <div className="fixed bottom-8 w-full text-center text-slate-900 text-sm animate-pulse font-mono-experiment font-bold">
+    <div className="fixed bottom-8 w-full text-center text-slate-300 text-sm animate-pulse font-mono-experiment font-bold">
       Waiting for Investigator...
     </div>
   );

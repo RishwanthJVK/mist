@@ -15,6 +15,8 @@ export interface ExperimentState {
   accuracy: number;
   totalAnswered: number;
   totalCorrect: number;
+  stressTotalAnswered: number; // Track only stress mode answers
+  stressTotalCorrect: number;  // Track only stress mode correct answers
   consecutiveCorrect: number;
   consecutiveIncorrect: number;
   userAverageResponseTime: number | null;
@@ -95,6 +97,8 @@ export function createInitialState(mode: ExperimentMode, prevAverage: number | n
     accuracy: 0,
     totalAnswered: 0,
     totalCorrect: 0,
+    stressTotalAnswered: 0,
+    stressTotalCorrect: 0,
     consecutiveCorrect: 0,
     consecutiveIncorrect: 0,
     userAverageResponseTime: prevAverage,
