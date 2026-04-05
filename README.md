@@ -1,6 +1,6 @@
 # MIST: Montreal Imaging Stress Task Implementation
 
-A web-based replication of the Montreal Imaging Stress Task (MIST). This application induces moderate psychosocial stress through adaptive mental arithmetic and social evaluative threat.
+A web-based implementation of the Montreal Imaging Stress Task (MIST) with role based access control. This application induces moderate psychosocial stress through adaptive mental arithmetic and social evaluative threat.
 
 ## Tech Stack
 * **Frontend:** React + Vite.
