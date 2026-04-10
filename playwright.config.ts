@@ -1,6 +1,6 @@
-import { createLovableConfig } from "lovable-agent-playwright-config/config";
+import { defineConfig, devices } from '@playwright/test';
 
-export default createLovableConfig({
+export default defineConfig({
   // Add your custom playwright configuration overrides here
   // Example:
   // timeout: 60000,

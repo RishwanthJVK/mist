@@ -126,8 +126,8 @@ function reducer(state: ExperimentState, action: Action): ExperimentState {
         }
 
         timeLimit = Math.max(1000, timeLimit); // Minimum 1s limit
-      } else if (mode === "CONTROL") {
-         difficultyLevel = 3;
+      } else if (mode === "CONTROL" || mode === "TRAINING") {
+         difficultyLevel = (difficultyLevel % 5) + 1;
       }
 
       const task = generateTask(difficultyLevel);

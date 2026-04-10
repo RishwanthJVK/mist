@@ -22,7 +22,7 @@ export const ParticipantLogin: React.FC<ParticipantLoginProps> = ({ onLogin }) =
     <div className="flex items-center justify-center min-h-screen bg-slate-50">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">MIST Explorer</h1>
+          <img src="/mist-text-logo.png" alt="MIST Logo" className="h-[60px] mx-auto mb-2 object-contain" />
           <p className="text-sm text-slate-500 mt-2">Montreal Imaging Stress Task</p>
         </div>
         

@@ -334,11 +334,14 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto space-y-8">
 
         <div className="flex justify-between items-center bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-200">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-              Admin <span className="text-primary italic">Dashboard</span>
-            </h1>
-            <p className="text-slate-500 text-sm mt-1 font-bold uppercase tracking-wider opacity-70">Manage participants and monitor session data.</p>
+          <div className="flex items-center gap-4">
+            <img src="/mist-head-logo.png" alt="MIST Logo" className="w-12 h-12 object-contain filter drop-shadow-sm" />
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+                Admin <span className="text-primary italic">Dashboard</span>
+              </h1>
+              <p className="text-slate-500 text-sm mt-1 font-bold uppercase tracking-wider opacity-70">Manage participants and monitor session data.</p>
+            </div>
           </div>
           <div className="flex gap-3 items-center">
             <Button 

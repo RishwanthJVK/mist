@@ -186,6 +186,7 @@ export default function ParticipantAnalytics() {
             <Button variant="ghost" onClick={() => navigate("/admin")} className="rounded-full w-10 h-10 p-0 hover:bg-slate-100 transition-colors">
                <ArrowLeft className="w-5 h-5 text-slate-600" />
             </Button>
+            <img src="/mist-head-logo.png" alt="MIST Logo" className="w-10 h-10 object-contain filter drop-shadow-sm" />
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
                 Participant <span className="text-primary italic">Analytics</span>

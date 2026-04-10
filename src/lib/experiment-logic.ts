@@ -81,8 +81,8 @@ export function getInitialTimeLimit(mode: ExperimentMode, userAverage: number | 
 }
 
 export function createInitialState(mode: ExperimentMode, prevAverage: number | null = null): ExperimentState {
-  // Start on baseline difficulty, control & stress start harder
-  const startDifficulty = (mode === "STRESS" || mode === "CONTROL") ? 3 : 1; 
+  // Start on baseline difficulty, stress starts harder
+  const startDifficulty = mode === "STRESS" ? 3 : 1; 
   const task = mode === "REST" ? { expression: "", answer: 0 } : generateTask(startDifficulty);
   
   return {

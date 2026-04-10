@@ -117,9 +117,7 @@ const Login = () => {
       
       <div className="w-full max-w-lg p-6 relative z-10">
         <div className="text-center mb-10 space-y-3 animate-in fade-in zoom-in duration-700">
-          <h1 className="text-6xl font-extrabold tracking-tight text-white mb-4">
-            MIST
-          </h1>
+          <img src="/mist-text-logo.png" alt="MIST Logo" className="h-[90px] mx-auto mb-4 object-contain" />
           <p className="text-slate-400 text-sm font-bold uppercase tracking-[0.25em] opacity-80">Montreal Imaging Stress Task</p>
         </div>
 
